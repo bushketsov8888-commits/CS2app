@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LAVARU CS EXPERT V1.0</title>
-    <script src="https://telegram.org"></script>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: #0f172a;
             color: #f8fafc;
             margin: 0;
@@ -89,22 +88,9 @@
             font-size: 13px;
             font-weight: 500;
             text-align: center;
-        }
-        .verdict.p1 {
             background-color: rgba(34, 197, 94, 0.1);
             border: 1px solid rgba(34, 197, 94, 0.3);
             color: #4ade80;
-        }
-        .verdict.p2 {
-            background-color: rgba(244, 63, 94, 0.1);
-            border: 1px solid rgba(244, 63, 94, 0.3);
-            color: #f43f5e;
-        }
-        .no-data {
-            text-align: center;
-            color: #94a3b8;
-            margin-top: 40px;
-            font-size: 14px;
         }
     </style>
 </head>
@@ -115,46 +101,32 @@
         <p>Ультимативная ИИ-Аналитика & OSINT-Разведка</p>
     </div>
 
-    <div id="matches-list">
-        <div class="no-data">Загрузка актуальных OSINT-линий...</div>
-    </div>
+    <div id="matches-list"></div>
 
     <script>
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
+        const defaultMatches = [
+            {"tournament": "Shanghai Major 2026", "format": "Bo3", "t1": "Natus Vincere", "k1": "1.65", "t2": "Team Vitality", "k2": "2.25", "prob1": 58, "prob2": 42, "margin": "5.1", "reshuffles": "Стабильны", "jetlag": "Низкий", "verdict": "🟢 СИГНАЛ: Ставка на П1 (500 ₽). Состав в прайме."},
+            {"tournament": "Shanghai Major 2026", "format": "Bo3", "t1": "FaZe Clan", "k1": "1.85", "t2": "MOUZ", "k2": "1.95", "prob1": 45, "prob2": 55, "margin": "5.3", "reshuffles": "⚠️ Замена в составе!", "jetlag": "⚠️ Высокий джетлаг", "verdict": "🔥 СМАРТ-СИГНАЛ: Ставка на П2 (175 ₽). Дебафф соперника."},
+            {"tournament": "ESL Pro League", "format": "Bo1", "t1": "Team Spirit", "k1": "1.45", "t2": "G2 Esports", "k2": "2.75", "prob1": 66, "prob2": 34, "margin": "5.2", "reshuffles": "Стабильны", "jetlag": "Низкий", "verdict": "🟢 СИГНАЛ: Ставка на П1 (450 ₽). Высокий винрейт на Mirage."}
+        ];
 
-        // Универсальный парсер: сначала пробуем взять из ссылки, если она обрезана - берем дефолтную базу
-        const urlParams = new URLSearchParams(window.location.search);
-        let encodedData = urlParams.get('data');
+        try {
+const urlParams = new URLSearchParams(window.location.search);
+            const encodedData = urlParams.get('data');
+            let matches = defaultMatches;
 
-        // Если данных нет в ссылке из-за ограничений ПК-версии, подгружаем встроенный отказоустойчивый фид напрямую в браузер
-        if (!encodedData) {
-            const backupData = [
-{"tournament": "Shanghai Major 2026", "format": "Bo3", "t1": "Natus Vincere", "k1": "1.65", "t2": "Team Vitality", "k2": "2.25", "prob1": 58, "prob2": 42, "margin": "5.1", "reshuffles": "Стабильны", "jetlag": "Низкий", "rec_type": "P1", "verdict": "🟢 СИГНАЛ: Ставка на П1 (500 ₽). Состав в прайме."},
-                {"tournament": "Shanghai Major 2026", "format": "Bo3", "t1": "FaZe Clan", "k1": "1.85", "t2": "MOUZ", "k2": "1.95", "prob1": 45, "prob2": 55, "margin": "5.3", "reshuffles": "⚠️ Замена в составе!", "jetlag": "⚠️ Высокий джетлаг", "rec_type": "P2", "verdict": "🔥 СМАРТ-СИГНАЛ: Ставка на П2 (175 ₽). Дебафф соперника."},
-                {"tournament": "ESL Pro League", "format": "Bo1", "t1": "Team Spirit", "k1": "1.45", "t2": "G2 Esports", "k2": "2.75", "prob1": 66, "prob2": 34, "margin": "5.2", "reshuffles": "Стабильны", "jetlag": "Низкий", "rec_type": "P1", "verdict": "🟢 СИГНАЛ: Ставка на П1 (450 ₽). Высокий винрейт на Mirage."}
-            ];
-            renderMatches(backupData);
-        } else {
-            try {
-                const matches = JSON.parse(decodeURIComponent(encodedData));
-                renderMatches(matches);
-            } catch(e) {
-                console.log("Ошибка парсинга ссылки, включаем резерв");
+            if (encodedData) {
+                matches = JSON.parse(decodeURIComponent(encodedData));
             }
-        }
 
-        function renderMatches(matches) {
             const container = document.getElementById('matches-list');
             container.innerHTML = ''; 
 
             matches.forEach(match => {
                 const card = document.createElement('div');
                 card.className = 'match-card';
-                const verdictClass = match.rec_type === 'P2' ? 'verdict p2' : 'verdict p1';
-
                 card.innerHTML = `
-                    <div class="tournament">🏆 ${match.tournament} (${match.format})</div>
+                    <div class="tournament">🏆 ${match.tournament || 'Турнир'} (${match.format || 'Bo3'})</div>
                     <div class="teams-container">
                         <div class="team left">${match.t1} <span style="color:#64748b; font-size:13px;">(${match.k1})</span></div>
                         <div class="vs">VS</div>
@@ -167,65 +139,16 @@
                     <div class="metrics-grid">
                         <div class="metric-item">Шансы ИИ: <span style="color:#38bdf8">${match.prob1}%</span> / <span style="color:#f43f5e">${match.prob2}%</span></div>
                         <div class="metric-item">Маржа БК: <span>${match.margin}%</span></div>
-                        <div class="metric-item">Трансферы: <span>${match.reshuffles}</span></div>
-                        <div class="metric-item">Джетлаг: <span>${match.jetlag}</span></div>
+                        <div class="metric-item">Трансферы: <span>${match.reshuffles || 'Стабильны'}</span></div>
+                        <div class="metric-item">Джетлаг: <span>${match.jetlag || 'Низкий'}</span></div>
                     </div>
-                    <div class="${verdictClass}">
-                        ${match.verdict}
-                    </div>
+                    <div class="verdict">${match.verdict}</div>
                 `;
                 container.appendChild(card);
             });
+        } catch (e) {
+            console.error(e);
         }
-    </script>
-</body>
-</html>
-{"tournament": "ESL Pro League", "format": "Bo1", "t1": "Team Spirit", "k1": "1.45", "t2": "G2 Esports", "k2": "2.75", "prob1": 66, "prob2": 34, "margin": "5.2", "reshuffles": "Стабильны", "jetlag": "Низкий", "rec_type": "P1", "verdict": "🟢 СИГНАЛ: Ставка на П1 (450 ₽). Высокий винрейт на Mirage."}
-        ];
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const encodedData = urlParams.get('data');
-        let matchesToRender = defaultMatches;
-
-        if (encodedData) {
-            try {
-                matchesToRender = JSON.parse(decodeURIComponent(encodedData));
-            } catch(e) {
-                console.log("Используем встроенный надежный фид");
-            }
-        }
-
-        const container = document.getElementById('matches-list');
-        container.innerHTML = ''; 
-
-        matchesToRender.forEach(match => {
-            const card = document.createElement('div');
-            card.className = 'match-card';
-            const verdictClass = match.rec_type === 'P2' ? 'verdict p2' : 'verdict p1';
-
-            card.innerHTML = `
-                <div class="tournament">🏆 ${match.tournament} (${match.format})</div>
-                <div class="teams-container">
-                    <div class="team left">${match.t1} <span style="color:#64748b; font-size:13px;">(${match.k1})</span></div>
-                    <div class="vs">VS</div>
-                    <div class="team right"><span style="color:#64748b; font-size:13px;">(${match.k2})</span> ${match.t2}</div>
-                </div>
-                <div class="odds-bar-container">
-                    <div class="bar-t1" style="width: ${match.prob1}%;"></div>
-                    <div class="bar-t2" style="width: ${match.prob2}%;"></div>
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-item">Шансы ИИ: <span style="color:#38bdf8">${match.prob1}%</span> / <span style="color:#f43f5e">${match.prob2}%</span></div>
-                    <div class="metric-item">Маржа БК: <span>${match.margin}%</span></div>
-                    <div class="metric-item">Трансферы: <span>${match.reshuffles}</span></div>
-                    <div class="metric-item">Джетлаг: <span>${match.jetlag}</span></div>
-                </div>
-                <div class="${verdictClass}">
-                    ${match.verdict}
-                </div>
-            `;
-            container.appendChild(card);
-        });
     </script>
 </body>
 </html>
