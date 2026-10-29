@@ -1,74 +1,179 @@
-import asyncio
-from aiogram import Bot, Dispatcher, types
-from aiogram.filters import Command
-from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAVARU CS EXPERT V1.0</title>
+    <script src="https://telegram.org"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            margin: 0;
+            padding: 16px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .header h1 {
+            font-size: 20px;
+            color: #38bdf8;
+            margin: 0 0 4px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .header p {
+            font-size: 12px;
+            color: #94a3b8;
+            margin: 0;
+        }
+        .match-card {
+            background-color: #1e293b;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #334155;
+        }
+        .tournament {
+            font-size: 11px;
+            color: #f59e0b;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .teams-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .team {
+            font-size: 16px;
+            font-weight: bold;
+            width: 40%;
+        }
+        .team.left { text-align: left; }
+        .team.right { text-align: right; }
+        .vs {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: bold;
+        }
+        .odds-bar-container {
+            background-color: #334155;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            margin-bottom: 16px;
+        }
+        .bar-t1 { background-color: #38bdf8; height: 100%; }
+        .bar-t2 { background-color: #f43f5e; height: 100%; }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 12px;
+            border-top: 1px solid #334155;
+            padding-top: 12px;
+            margin-bottom: 12px;
+        }
+        .metric-item { color: #94a3b8; }
+        .metric-item span { color: #f8fafc; font-weight: 500; }
+        .verdict {
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+        }
+        .verdict.p1 {
+            background-color: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #4ade80;
+        }
+        .verdict.p2 {
+            background-color: rgba(244, 63, 94, 0.1);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            color: #f43f5e;
+        }
+        .no-data {
+            text-align: center;
+            color: #94a3b8;
+            margin-top: 40px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
 
-# !!! ВСТАВЬТЕ СЮДА СВОЙ ТОКЕН ОТ BOTFATHER !!!
-API_TOKEN = 'ВАШ_ТОКЕН_ОТ_BOTFATHER'
+    <div class="header">
+        <h1>LAVARU EXPERT V1.0</h1>
+        <p>Ультимативная ИИ-Аналитика & OSINT-Разведка</p>
+    </div>
 
-bot = Bot(token=API_TOKEN)
-dp = Dispatcher()
+    <!-- Контейнер, куда скрипт будет сам добавлять матчи -->
+    <div id="matches-list">
+        <div class="no-data">Загрузка актуальных OSINT-линий...</div>
+    </div>
 
-# Имитация базы подписок пользователей
-user_subscriptions = {}
+    <script>
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
 
-# Собираем ссылку из кусочков, чтобы система её не обрезала при выводе текста
-часть1 = "https" + "://" + "bushketsov8888-commits"
-часть2 = ".github.io" + "/" + "CS2app" + "/" + "?v=1"
-WEB_APP_URL = часть1 + часть2
-
-@dp.message(Command("start"))
-async def cmd_start(message: types.Message):
-    user_id = message.from_user.id
-    if user_id not in user_subscriptions:
-        user_subscriptions[user_id] = False 
+        // Проверяем, передал ли Telegram бот данные внутрь Web App
+        const initDataUnsafe = window.Telegram.WebApp.initDataUnsafe;
         
-    builder = ReplyKeyboardBuilder()
-    builder.add(types.KeyboardButton(
-        text="🚀 Открыть OSINT-Приложение", 
-        web_app=types.WebAppInfo(url=WEB_APP_URL)
-    ))
-    builder.add(types.KeyboardButton(text="💎 Мой VIP статус"))
-    
-    await message.answer(
-        f"👋 Рады приветствовать вас в коммерческой экосистеме *LAVARU CS EXPERT*!\n\n"
-        f"Мы успешно упаковали сложную ИИ-аналитику в красивое встроенное Web-приложение.\n"
-        f"Нажмите космическую кнопку ниже, чтобы запустить интерактивный радар матчей.",
-        reply_markup=builder.as_markup(resize_keyboard=True),
-        parse_mode="Markdown"
-    )
+        // Получаем параметры матчей из специальной ссылки
+        const urlParams = new URLSearchParams(window.location.search);
+        const encodedData = urlParams.get('data');
 
-@dp.message(lambda message: message.text == "💎 Мой VIP статус")
-async def check_vip(message: types.Message):
-    user_id = message.from_user.id
-    is_vip = user_subscriptions.get(user_id, False)
-    
-    if is_vip:
-        await message.answer("✅ *Ваш статус:* 👑 VIP-ПОЛЬЗОВАТЕЛЬ\nДоступ ко всем закрытым графическим панелям активен!")
-    else:
-        kb = InlineKeyboardBuilder()
-        kb.add(types.InlineKeyboardButton(text="🔥 Купить VIP (Неделя) — 990 ₽", callback_data="buy_week"))
-        kb.add(types.InlineKeyboardButton(text="🚀 Купить VIP (Месяц) — 2 490 ₽", callback_data="buy_month"))
-        kb.add(types.InlineKeyboardButton(text="🎁 ТЕСТ: Включить VIP бесплатно", callback_data="activate_free_test"))
-        kb.adjust(1)
-        
-        await message.answer(
-            "❌ *У вас нет активной VIP-подписки.*\n\n"
-            "Обновите тариф для разблокировки закрытых ИИ-фильтров внутри приложения:",
-            reply_markup=kb.as_markup(),
-            parse_mode="Markdown"
-        )
+        if (encodedData) {
+try {
+                // Декодируем информацию о матчах, присланную из Python
+                const matches = JSON.parse(decodeURIComponent(encodedData));
+                const container = document.getElementById('matches-list');
+                container.innerHTML = ''; // Очищаем текст загрузки
 
-@dp.callback_query(lambda c: c.data == "activate_free_test")
-async def process_free_test(callback_query: types.CallbackQuery):
-    user_id = callback_query.from_user.id
-    user_subscriptions[user_id] = True
-    await callback_query.answer("VIP успешно активирован!")
-    await callback_query.message.answer("🎉 *VIP-статус активирован!* Теперь вы можете открывать наше OSINT-приложение!")
+                matches.forEach(match => {
+                    const card = document.createElement('div');
+                    card.className = 'match-card';
+                    
+                    // Определяем цвет плашки вердикта
+                    const verdictClass = match.rec_type === 'P2' ? 'verdict p2' : 'verdict p1';
 
-async def main():
-    print("Бот со встроенным Web App успешно запущен и слушает команды...")
-    await dp.start_polling(bot)
-
-if __name__ == "__main__":
-    asyncio.run(main())
+                    card.innerHTML = `
+                        <div class="tournament">🏆 ${match.tournament} (${match.format})</div>
+                        <div class="teams-container">
+                            <div class="team left">${match.t1} <span style="color:#64748b; font-size:13px;">(${match.k1})</span></div>
+                            <div class="vs">VS</div>
+                            <div class="team right"><span style="color:#64748b; font-size:13px;">(${match.k2})</span> ${match.t2}</div>
+                        </div>
+                        <div class="odds-bar-container">
+                            <div class="bar-t1" style="width: ${match.prob1}%;"></div>
+                            <div class="bar-t2" style="width: ${match.prob2}%;"></div>
+                        </div>
+                        <div class="metrics-grid">
+                            <div class="metric-item">Шансы ИИ: <span style="color:#38bdf8">${match.prob1}%</span> / <span style="color:#f43f5e">${match.prob2}%</span></div>
+                            <div class="metric-item">Маржа БК: <span>${match.margin}%</span></div>
+                            <div class="metric-item">Трансферы: <span>${match.reshuffles}</span></div>
+                            <div class="metric-item">Джетлаг: <span>${match.jetlag}</span></div>
+                        </div>
+                        <div class="${verdictClass}">
+                            ${match.verdict}
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (e) {
+                document.getElementById('matches-list').innerHTML = '<div class="no-data">❌ Ошибка обработки пакета данных ИИ.</div>';
+            }
+        } else {
+            document.getElementById('matches-list').innerHTML = '<div class="no-data">⏳ Синхронизация с сервером... Обновите страницу через бота.</div>';
+        }
+    </script>
+</body>
+</html>
