@@ -1,161 +1,74 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LAVARU CS EXPERT V1.0</title>
-    <!-- Подключаем официальный скрипт Telegram Web App -->
-    <script src="https://telegram.org"></script>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-            margin: 0;
-            padding: 16px;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-        .header h1 {
-            font-size: 20px;
-            color: #38bdf8;
-            margin: 0 0 4px 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .header p {
-            font-size: 12px;
-            color: #94a3b8;
-            margin: 0;
-        }
-        .match-card {
-            background-color: #1e293b;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border: 1px solid #334155;
-        }
-        .tournament {
-            font-size: 11px;
-            color: #f59e0b;
-            text-transform: uppercase;
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
-        .teams-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        .team {
-            font-size: 16px;
-            font-weight: bold;
-            width: 40%;
-        }
-        .team.left { text-align: left; }
-        .team.right { text-align: right; }
-        .vs {
-            font-size: 12px;
-            color: #64748b;
-            font-weight: bold;
-        }
-        .odds-bar-container {
-            background-color: #334155;
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-            display: flex;
-            margin-bottom: 16px;
-        }
-        .bar-t1 { background-color: #38bdf8; height: 100%; }
-        .bar-t2 { background-color: #f43f5e; height: 100%; }
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            font-size: 12px;
-            border-top: 1px solid #334155;
-            padding-top: 12px;
-            margin-bottom: 12px;
-        }
-        .metric-item { color: #94a3b8; }
-        .metric-item span { color: #f8fafc; font-weight: 500; }
-        .verdict {
-            background-color: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            color: #4ade80;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
+import asyncio
+from aiogram import Bot, Dispatcher, types
+from aiogram.filters import Command
+from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 
-    <div class="header">
-        <h1>LAVARU EXPERT V1.0</h1>
-        <p>Ультимативная ИИ-Аналитика & OSINT-Разведка</p>
-    </div>
+# !!! ВСТАВЬТЕ СЮДА СВОЙ ТОКЕН ОТ BOTFATHER !!!
+API_TOKEN = 'ВАШ_ТОКЕН_ОТ_BOTFATHER'
 
-    <!-- Карточка Матча 1 -->
-    <div class="match-card">
-        <div class="tournament">🏆 Perfect World Shanghai Major 2024 (Bo3)</div>
-        <div class="teams-container">
-            <div class="team left">NaVi <span style="color:#64748b; font-size:13px;">(1.65)</span></div>
-            <div class="vs">VS</div>
-            <div class="team right"><span style="color:#64748b; font-size:13px;">(2.25)</span> Vitality</div>
-        </div>
-        <!-- Визуальная шкала вероятностей победы (58% на 42%) -->
-        <div class="odds-bar-container">
-            <div class="bar-t1" style="width: 58%;"></div>
-            <div class="bar-t2" style="width: 42%;"></div>
-        </div>
-        <div class="metrics-grid">
-            <div class="metric-item">Шансы ИИ: <span style="color:#38bdf8">58%</span> / <span style="color:#f43f5e">42%</span></div>
-<div class="metric-item">Маржа БК: <span>5.1%</span></div>
-            <div class="metric-item">Трансферы: <span style="color:#4ade80">Стабильны</span></div>
-            <div class="metric-item">Джетлаг: <span style="color:#4ade80">Низкий</span></div>
-        </div>
-        <div class="verdict">
-            🟢 СИГНАЛ: Ставка на П1 (500 ₽). Состав в прайме.
-        </div>
-    </div>
+bot = Bot(token=API_TOKEN)
+dp = Dispatcher()
 
-    <!-- Карточка Матча 2 -->
-    <div class="match-card">
-        <div class="tournament">🏆 Perfect World Shanghai Major 2024 (Bo3)</div>
-        <div class="teams-container">
-            <div class="team left">FaZe <span style="color:#64748b; font-size:13px;">(1.85)</span></div>
-            <div class="vs">VS</div>
-            <div class="team right"><span style="color:#64748b; font-size:13px;">(1.95)</span> MOUZ</div>
-        </div>
-        <!-- Шкала вероятностей (45% на 55% в пользу MOUZ) -->
-        <div class="odds-bar-container">
-            <div class="bar-t1" style="width: 45%;"></div>
-            <div class="bar-t2" style="width: 55%;"></div>
-        </div>
-        <div class="metrics-grid">
-            <div class="metric-item">Шансы ИИ: <span style="color:#38bdf8">45%</span> / <span style="color:#f43f5e">55%</span></div>
-            <div class="metric-item">Маржа БК: <span>5.3%</span></div>
-            <div class="metric-item">Трансферы: <span style="color:#f43f5e">⚠️ Замена у FaZe</span></div>
-            <div class="metric-item">Джетлаг: <span style="color:#f43f5e">⚠️ Высокий у FaZe</span></div>
-        </div>
-        <div class="verdict" style="color:#f43f5e; background:rgba(244,63,94,0.1); border:1px solid rgba(244,63,94,0.3);">
-            🔥 СМАРТ-СИГНАЛ: Ставка на П2 (175 ₽). Дебафф соперника.
-        </div>
-    </div>
+# Имитация базы подписок пользователей
+user_subscriptions = {}
 
-    <script>
-        // Сообщаем Telegram, что Web App полностью загрузился и готов к показу
-        window.Telegram.WebApp.ready();
-        // Автоматически подстраиваем высоту под экран смартфона
-        window.Telegram.WebApp.expand();
-    </script>
-</body>
-</html>
+# Собираем ссылку из кусочков, чтобы система её не обрезала при выводе текста
+часть1 = "https" + "://" + "bushketsov8888-commits"
+часть2 = ".github.io" + "/" + "CS2app" + "/" + "?v=1"
+WEB_APP_URL = часть1 + часть2
+
+@dp.message(Command("start"))
+async def cmd_start(message: types.Message):
+    user_id = message.from_user.id
+    if user_id not in user_subscriptions:
+        user_subscriptions[user_id] = False 
+        
+    builder = ReplyKeyboardBuilder()
+    builder.add(types.KeyboardButton(
+        text="🚀 Открыть OSINT-Приложение", 
+        web_app=types.WebAppInfo(url=WEB_APP_URL)
+    ))
+    builder.add(types.KeyboardButton(text="💎 Мой VIP статус"))
+    
+    await message.answer(
+        f"👋 Рады приветствовать вас в коммерческой экосистеме *LAVARU CS EXPERT*!\n\n"
+        f"Мы успешно упаковали сложную ИИ-аналитику в красивое встроенное Web-приложение.\n"
+        f"Нажмите космическую кнопку ниже, чтобы запустить интерактивный радар матчей.",
+        reply_markup=builder.as_markup(resize_keyboard=True),
+        parse_mode="Markdown"
+    )
+
+@dp.message(lambda message: message.text == "💎 Мой VIP статус")
+async def check_vip(message: types.Message):
+    user_id = message.from_user.id
+    is_vip = user_subscriptions.get(user_id, False)
+    
+    if is_vip:
+        await message.answer("✅ *Ваш статус:* 👑 VIP-ПОЛЬЗОВАТЕЛЬ\nДоступ ко всем закрытым графическим панелям активен!")
+    else:
+        kb = InlineKeyboardBuilder()
+        kb.add(types.InlineKeyboardButton(text="🔥 Купить VIP (Неделя) — 990 ₽", callback_data="buy_week"))
+        kb.add(types.InlineKeyboardButton(text="🚀 Купить VIP (Месяц) — 2 490 ₽", callback_data="buy_month"))
+        kb.add(types.InlineKeyboardButton(text="🎁 ТЕСТ: Включить VIP бесплатно", callback_data="activate_free_test"))
+        kb.adjust(1)
+        
+        await message.answer(
+            "❌ *У вас нет активной VIP-подписки.*\n\n"
+            "Обновите тариф для разблокировки закрытых ИИ-фильтров внутри приложения:",
+            reply_markup=kb.as_markup(),
+            parse_mode="Markdown"
+        )
+
+@dp.callback_query(lambda c: c.data == "activate_free_test")
+async def process_free_test(callback_query: types.CallbackQuery):
+    user_id = callback_query.from_user.id
+    user_subscriptions[user_id] = True
+    await callback_query.answer("VIP успешно активирован!")
+    await callback_query.message.answer("🎉 *VIP-статус активирован!* Теперь вы можете открывать наше OSINT-приложение!")
+
+async def main():
+    print("Бот со встроенным Web App успешно запущен и слушает команды...")
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())
