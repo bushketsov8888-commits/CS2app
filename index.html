@@ -180,3 +180,52 @@
     </script>
 </body>
 </html>
+{"tournament": "ESL Pro League", "format": "Bo1", "t1": "Team Spirit", "k1": "1.45", "t2": "G2 Esports", "k2": "2.75", "prob1": 66, "prob2": 34, "margin": "5.2", "reshuffles": "Стабильны", "jetlag": "Низкий", "rec_type": "P1", "verdict": "🟢 СИГНАЛ: Ставка на П1 (450 ₽). Высокий винрейт на Mirage."}
+        ];
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const encodedData = urlParams.get('data');
+        let matchesToRender = defaultMatches;
+
+        if (encodedData) {
+            try {
+                matchesToRender = JSON.parse(decodeURIComponent(encodedData));
+            } catch(e) {
+                console.log("Используем встроенный надежный фид");
+            }
+        }
+
+        const container = document.getElementById('matches-list');
+        container.innerHTML = ''; 
+
+        matchesToRender.forEach(match => {
+            const card = document.createElement('div');
+            card.className = 'match-card';
+            const verdictClass = match.rec_type === 'P2' ? 'verdict p2' : 'verdict p1';
+
+            card.innerHTML = `
+                <div class="tournament">🏆 ${match.tournament} (${match.format})</div>
+                <div class="teams-container">
+                    <div class="team left">${match.t1} <span style="color:#64748b; font-size:13px;">(${match.k1})</span></div>
+                    <div class="vs">VS</div>
+                    <div class="team right"><span style="color:#64748b; font-size:13px;">(${match.k2})</span> ${match.t2}</div>
+                </div>
+                <div class="odds-bar-container">
+                    <div class="bar-t1" style="width: ${match.prob1}%;"></div>
+                    <div class="bar-t2" style="width: ${match.prob2}%;"></div>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item">Шансы ИИ: <span style="color:#38bdf8">${match.prob1}%</span> / <span style="color:#f43f5e">${match.prob2}%</span></div>
+                    <div class="metric-item">Маржа БК: <span>${match.margin}%</span></div>
+                    <div class="metric-item">Трансферы: <span>${match.reshuffles}</span></div>
+                    <div class="metric-item">Джетлаг: <span>${match.jetlag}</span></div>
+                </div>
+                <div class="${verdictClass}">
+                    ${match.verdict}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    </script>
+</body>
+</html>
