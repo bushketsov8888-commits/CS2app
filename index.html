@@ -2,153 +2,294 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LAVARU CS EXPERT V1.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LAVARU CS EXPERT v1.0</title>
     <style>
+        :root {
+            --bg-main: #121316; /* Глубокий антрацит */
+            --bg-card: #1a1c22; /* Графитовые плитки */
+            --brand-orange: #ff5500; /* Неоновый оранжевый */
+            --brand-orange-glow: rgba(255, 85, 0, 0.2);
+            --text-main: #ffffff;
+            --text-muted: #7e8494;
+            --accent-green: #00cc66;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-            margin: 0;
+            background-color: var(--bg-main);
+            color: var(--text-main);
             padding: 16px;
+            padding-bottom: 30px;
         }
+
+        /* Шапка приложения */
         .header {
-            text-align: center;
-            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #252830;
+            padding-bottom: 12px;
         }
-        .header h1 {
-            font-size: 20px;
-            color: #38bdf8;
-            margin: 0 0 4px 0;
+
+        .logo-box h1 {
+            font-size: 18px;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
-        .header p {
+
+        .logo-box span {
+            color: var(--brand-orange);
+            text-shadow: 0 0 10px var(--brand-orange-glow);
+        }
+
+        .winrate-badge {
+            background: linear-gradient(135deg, #252830, #1a1c22);
+            border: 1px solid var(--brand-orange);
+            padding: 6px 12px;
+            border-radius: 20px;
             font-size: 12px;
-            color: #94a3b8;
-            margin: 0;
+            font-weight: 600;
+            box-shadow: 0 0 8px var(--brand-orange-glow);
         }
+
+        .winrate-badge em {
+            color: var(--accent-green);
+            font-style: normal;
+        }
+
+        /* Карточка матча */
         .match-card {
-            background-color: #1e293b;
-            border-radius: 12px;
+            background-color: var(--bg-card);
+            border-radius: 14px;
+            border: 1px solid #252830;
             padding: 16px;
             margin-bottom: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border: 1px solid #334155;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease, border-color 0.2s ease;
         }
-        .tournament {
+
+        .match-card:active {
+            transform: scale(0.99);
+            border-color: var(--brand-orange);
+        }
+
+        .match-status {
+            display: flex;
+            justify-content: space-between;
             font-size: 11px;
-            color: #f59e0b;
+            color: var(--text-muted);
             text-transform: uppercase;
-            font-weight: bold;
+            font-weight: 700;
             margin-bottom: 12px;
+            letter-spacing: 0.5px;
         }
+
+        .status-live {
+            color: var(--brand-orange);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-live::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: var(--brand-orange);
+            border-radius: 50%;
+            animation: blink 1.2s infinite;
+        }
+
+        /* Команды */
         .teams-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
         }
-        .team {
-            font-size: 16px;
-            font-weight: bold;
-            width: 40%;
-        }
-        .team.left { text-align: left; }
-        .team.right { text-align: right; }
-        .vs {
-            font-size: 12px;
-            color: #64748b;
-            font-weight: bold;
-        }
-        .odds-bar-container {
-            background-color: #334155;
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
+
+        .team-row {
             display: flex;
-            margin-bottom: 16px;
+            align-items: center;
+            gap: 10px;
+            width: 42%;
         }
-        .bar-t1 { background-color: #38bdf8; height: 100%; }
-        .bar-t2 { background-color: #f43f5e; height: 100%; }
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
+
+        .team-row.right {
+            flex-direction: row-reverse;
+            text-align: right;
+        }
+
+        .team-logo {
+            width: 36px;
+            height: 36px;
+            background-color: #252830;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+font-weight: 700;
             font-size: 12px;
-            border-top: 1px solid #334155;
-            padding-top: 12px;
-            margin-bottom: 12px;
+            border: 1px solid #323642;
         }
-        .metric-item { color: #94a3b8; }
-        .metric-item span { color: #f8fafc; font-weight: 500; }
-        .verdict {
+
+        .team-name {
+            font-size: 14px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .match-score {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: 2px;
+            text-align: center;
+            width: 16%;
+        }
+
+        /* Аналитический блок (AI OSINT) */
+        .analytics-block {
+            background-color: #121316;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-left: 3px solid var(--brand-orange);
+        }
+
+        .analytics-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .analytics-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .label {
+            color: var(--text-muted);
+        }
+
+        .value {
+            font-weight: 600;
+        }
+
+        .value.highlight {
+            color: var(--brand-orange);
+        }
+
+        /* Кнопка действия / Коэффициенты */
+        .odds-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .odds-btn {
+            flex: 1;
+            background-color: #252830;
+            border: 1px solid #323642;
+            color: var(--text-main);
             padding: 10px;
             border-radius: 8px;
             font-size: 13px;
-            font-weight: 500;
-            text-align: center;
-            background-color: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            color: #4ade80;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            transition: all 0.15s ease;
+        }
+
+        .odds-btn:active {
+            background-color: var(--brand-orange);
+            border-color: var(--brand-orange);
+            box-shadow: 0 0 10px var(--brand-orange-glow);
+        }
+
+        .odds-btn span {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .odds-btn:active span {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes blink {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
         }
     </style>
 </head>
 <body>
 
+    <!-- Шапка приложения -->
     <div class="header">
-        <h1>LAVARU EXPERT V1.0</h1>
-        <p>Ультимативная ИИ-Аналитика & OSINT-Разведка</p>
+        <div class="logo-box">
+            <h1>LAVARU <span>CS EXPERT</span></h1>
+        </div>
+        <div class="winrate-badge">
+            W/R (30д): <em>74.2%</em>
+        </div>
     </div>
 
-    <div id="matches-list"></div>
+    <!-- Пример карточки LIVE матча -->
+    <div class="match-card">
+        <div class="match-status">
+            <span class="status-live">Матч в эфире · Карта 1</span>
+            <span>PGL Major 2026</span>
+        </div>
+        
+        <div class="teams-container">
+            <div class="team-row">
+                <div class="team-logo">FaZe</div>
+                <div class="team-name">FaZe Clan</div>
+            </div>
+            <div class="match-score">10:7</div>
+            <div class="team-row right">
+                <div class="team-logo">G2</div>
+                <div class="team-name">G2 Esports</div>
+            </div>
+        </div>
 
-    <script>
-        const defaultMatches = [
-            {"tournament": "Shanghai Major 2026", "format": "Bo3", "t1": "Natus Vincere", "k1": "1.65", "t2": "Team Vitality", "k2": "2.25", "prob1": 58, "prob2": 42, "margin": "5.1", "reshuffles": "Стабильны", "jetlag": "Низкий", "verdict": "🟢 СИГНАЛ: Ставка на П1 (500 ₽). Состав в прайме."},
-            {"tournament": "Shanghai Major 2026", "format": "Bo3", "t1": "FaZe Clan", "k1": "1.85", "t2": "MOUZ", "k2": "1.95", "prob1": 45, "prob2": 55, "margin": "5.3", "reshuffles": "⚠️ Замена в составе!", "jetlag": "⚠️ Высокий джетлаг", "verdict": "🔥 СМАРТ-СИГНАЛ: Ставка на П2 (175 ₽). Дебафф соперника."},
-            {"tournament": "ESL Pro League", "format": "Bo1", "t1": "Team Spirit", "k1": "1.45", "t2": "G2 Esports", "k2": "2.75", "prob1": 66, "prob2": 34, "margin": "5.2", "reshuffles": "Стабильны", "jetlag": "Низкий", "verdict": "🟢 СИГНАЛ: Ставка на П1 (450 ₽). Высокий винрейт на Mirage."}
-        ];
+        <!-- OSINT Аналитика ИИ -->
+        <div class="analytics-block">
+            <div class="analytics-row">
+                <span class="label">Вероятность (Live + OSINT):</span>
+                <span class="value">FaZe 58% vs 42% G2</span>
+            </div>
+            <div class="analytics-row">
+                <span class="label">Фактор камбэка (Loss Bonus):</span>
+                <span class="value">Высокий (У G2 сломана экономика)</span>
+            </div>
+            <div class="analytics-row">
+                <span class="label">Рекомендация (Критерий Келли):</span>
+                <span class="value highlight">ТБ 21.5 раундов (4.2% от банка)</span>
+            </div>
+        </div>
 
-        try {
-const urlParams = new URLSearchParams(window.location.search);
-            const encodedData = urlParams.get('data');
-            let matches = defaultMatches;
+        <!-- Быстрые исходы -->
+<div class="odds-container">
+            <div class="odds-btn"><span>П1</span> 1.65</div>
+            <div class="odds-btn"><span>П2</span> 2.25</div>
+        </div>
+    </div>
 
-            if (encodedData) {
-                matches = JSON.parse(decodeURIComponent(encodedData));
-            }
-
-            const container = document.getElementById('matches-list');
-            container.innerHTML = ''; 
-
-            matches.forEach(match => {
-                const card = document.createElement('div');
-                card.className = 'match-card';
-                card.innerHTML = `
-                    <div class="tournament">🏆 ${match.tournament || 'Турнир'} (${match.format || 'Bo3'})</div>
-                    <div class="teams-container">
-                        <div class="team left">${match.t1} <span style="color:#64748b; font-size:13px;">(${match.k1})</span></div>
-                        <div class="vs">VS</div>
-                        <div class="team right"><span style="color:#64748b; font-size:13px;">(${match.k2})</span> ${match.t2}</div>
-                    </div>
-                    <div class="odds-bar-container">
-                        <div class="bar-t1" style="width: ${match.prob1}%;"></div>
-                        <div class="bar-t2" style="width: ${match.prob2}%;"></div>
-                    </div>
-                    <div class="metrics-grid">
-                        <div class="metric-item">Шансы ИИ: <span style="color:#38bdf8">${match.prob1}%</span> / <span style="color:#f43f5e">${match.prob2}%</span></div>
-                        <div class="metric-item">Маржа БК: <span>${match.margin}%</span></div>
-                        <div class="metric-item">Трансферы: <span>${match.reshuffles || 'Стабильны'}</span></div>
-                        <div class="metric-item">Джетлаг: <span>${match.jetlag || 'Низкий'}</span></div>
-                    </div>
-                    <div class="verdict">${match.verdict}</div>
-                `;
-                container.appendChild(card);
-            });
-        } catch (e) {
-            console.error(e);
-        }
-    </script>
 </body>
 </html>
