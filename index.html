@@ -98,6 +98,7 @@
             <div id="btn-odds-p2" class="odds-btn"><span>П2</span> --</div>
         </div>
     </div>
+    <!-- Модуль безопасного приёма данных -->
     <script>
         function getAppConfig() {
             const params = new URLSearchParams(window.location.search);
@@ -118,27 +119,29 @@
             }
 
             try {
+                // Извлекаем чистую строку и преобразуем в понятный JSON объект
                 const decodedData = JSON.parse(decodeURIComponent(rawData));
                 
-                if(decodedData.tournament) document.getElementById('tournament-title').innerText = decodedData.tournament;
-                if(decodedData.status_text) document.getElementById('match-status-text').innerText = decodedData.status_text;
+                document.getElementById('tournament-title').innerText = decodedData.tournament || "Турнир";
+                document.getElementById('match-status-text').innerText = decodedData.status_text || "В эфире";
                 
                 const t1 = decodedData.team1 || "Команда 1";
                 const t2 = decodedData.team2 || "Команда 2";
                 
-                if(document.getElementById('team1-name')) document.getElementById('team1-name').innerText = t1;
-                if(document.getElementById('team2-name')) document.getElementById('team2-name').innerText = t2;
-                if(document.getElementById('team1-logo')) document.getElementById('team1-logo').innerText = t1.substring(0, 4).toUpperCase();
-                if(document.getElementById('team2-logo')) document.getElementById('team2-logo').innerText = t2.substring(0, 4).toUpperCase();
+                document.getElementById('team1-name').innerText = t1;
+                document.getElementById('team2-name').innerText = t2;
+                document.getElementById('team1-logo').innerText = t1.substring(0, 4).toUpperCase();
+                document.getElementById('team2-logo').innerText = t2.substring(0, 4).toUpperCase();
                 
-                if(decodedData.score) document.getElementById('match-score').innerText = decodedData.score;
-                if(decodedData.p1_percent) document.getElementById('analytics-probability').innerText = `${decodedData.p1_percent}% vs ${decodedData.p2_percent}%`;
-                if(decodedData.comeback_factor) document.getElementById('analytics-comeback').innerText = decodedData.comeback_factor;
-                if(decodedData.recommendation) document.getElementById('analytics-recommendation').innerText = decodedData.recommendation;
+                document.getElementById('match-score').innerText = decodedData.score || "0:0";
+                document.getElementById('analytics-probability').innerText = `${decodedData.p1_percent}% vs ${decodedData.p2_percent}%`;
+                document.getElementById('analytics-comeback').innerText = decodedData.comeback_factor || "Нормальный";
+                document.getElementById('analytics-recommendation').innerText = decodedData.recommendation || "Нет рекомендаций";
                 
-                if(decodedData.odds_p1) document.getElementById('btn-odds-p1').innerHTML = `<span>П1</span> ${decodedData.odds_p1}`;
-                if(decodedData.odds_p2) document.getElementById('btn-odds-p2').innerHTML = `<span>П2</span> ${decodedData.odds_p2}`;
+                document.getElementById('btn-odds-p1').innerHTML = `<span>П1</span> ${decodedData.odds_p1 || '--'}`;
+                document.getElementById('btn-odds-p2').innerHTML = `<span>П2</span> ${decodedData.odds_p2 || '--'}`;
                 
+                // Выводим твой скрытый ID на фон для проверки безопасности
                 if (decodedData.user_id) {
                     const watermark = document.createElement('div');
                     watermark.style.position = 'fixed';
