@@ -28,6 +28,8 @@
             color: var(--text-main);
             padding: 16px;
             padding-bottom: 30px;
+            position: relative;
+            min-height: 100vh;
         }
 
         /* Шапка приложения */
@@ -77,6 +79,7 @@
             position: relative;
             overflow: hidden;
             transition: transform 0.2s ease, border-color 0.2s ease;
+            z-index: 2;
         }
 
         .match-card:active {
@@ -138,9 +141,9 @@
             background-color: #252830;
             border-radius: 50%;
             display: flex;
-            align-items: center;
+align-items: center;
             justify-content: center;
-font-weight: 700;
+            font-weight: 700;
             font-size: 12px;
             border: 1px solid #323642;
         }
@@ -249,22 +252,22 @@ font-weight: 700;
         </div>
     </div>
 
-    <!-- Пример карточки LIVE матча -->
+    <!-- Карточка LIVE матча -->
     <div class="match-card">
         <div class="match-status">
-            <span class="status-live">Матч в эфире · Карта 1</span>
-            <span>PGL Major 2026</span>
+            <span id="match-status-text" class="status-live">Ожидание данных...</span>
+            <span id="tournament-title">CS:GO Match</span>
         </div>
         
         <div class="teams-container">
             <div class="team-row">
-                <div class="team-logo">FaZe</div>
-                <div class="team-name">FaZe Clan</div>
+                <div id="team1-logo" class="team-logo">T1</div>
+                <div id="team1-name" class="team-name">Команда 1</div>
             </div>
-            <div class="match-score">10:7</div>
+            <div id="match-score" class="match-score">0:0</div>
             <div class="team-row right">
-                <div class="team-logo">G2</div>
-                <div class="team-name">G2 Esports</div>
+                <div id="team2-logo" class="team-logo">T2</div>
+                <div id="team2-name" class="team-name">Команда 2</div>
             </div>
         </div>
 
@@ -272,24 +275,47 @@ font-weight: 700;
         <div class="analytics-block">
             <div class="analytics-row">
                 <span class="label">Вероятность (Live + OSINT):</span>
-                <span class="value">FaZe 58% vs 42% G2</span>
+                <span id="analytics-probability" class="value">--% vs --%</span>
             </div>
             <div class="analytics-row">
                 <span class="label">Фактор камбэка (Loss Bonus):</span>
-                <span class="value">Высокий (У G2 сломана экономика)</span>
+                <span id="analytics-comeback" class="value">Расчет...</span>
             </div>
             <div class="analytics-row">
-                <span class="label">Рекомендация (Критерий Келли):</span>
-                <span class="value highlight">ТБ 21.5 раундов (4.2% от банка)</span>
+<span class="label">Рекомендация (Критерий Келли):</span>
+                <span id="analytics-recommendation" class="value highlight">Обработка...</span>
             </div>
         </div>
 
         <!-- Быстрые исходы -->
-<div class="odds-container">
-            <div class="odds-btn"><span>П1</span> 1.65</div>
-            <div class="odds-btn"><span>П2</span> 2.25</div>
+        <div class="odds-container">
+            <div id="btn-odds-p1" class="odds-btn"><span>П1</span> --</div>
+            <div id="btn-odds-p2" class="odds-btn"><span>П2</span> --</div>
         </div>
     </div>
 
-</body>
-</html>
+    <!-- Модуль безопасного приёма данных -->
+    <script>
+        function getAppConfig() {
+            const params = new URLSearchParams(window.location.search);
+            const rawData = params.get('data');
+
+            if (!rawData) {
+                // Демо-данные, если страница открыта просто в браузере без бота
+                document.getElementById('match-status-text').innerText = "Демо-режим";
+                document.getElementById('tournament-title').innerText = "Тестовый Турнир";
+                document.getElementById('team1-name').innerText = "FaZe Clan";
+                document.getElementById('team2-name').innerText = "G2 Esports";
+                document.getElementById('match-score').innerText = "10:7";
+                document.getElementById('analytics-probability').innerText = "FaZe 58% vs 42% G2";
+                document.getElementById('analytics-comeback').innerText = "Высокий (У G2 сломана экономика)";
+                document.getElementById('analytics-recommendation').innerText = "ТБ 21.5 раундов (4.2% от банка)";
+                document.getElementById('btn-odds-p1').innerHTML = "<span>П1</span> 1.65";
+                document.getElementById('btn-odds-p2').innerHTML = "<span>П2</span> 2.25";
+                return;
+            }
+
+            try {
+                const decodedData = JSON.parse(decodeURIComponent(rawData));
+                
+                // Динамическое обновление всех элементов на основе данных от Python
