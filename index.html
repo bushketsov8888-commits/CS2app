@@ -81,14 +81,12 @@
             <div id="btn-odds-p2" class="odds-btn"><span>П2</span> --</div>
         </div>
     </div>
-
     <script>
         function loadMatchConfig() {
             const urlParams = new URLSearchParams(window.location.search);
             const rawData = urlParams.get('data');
 
             if (!rawData) {
-                // Демо-режим для тестов в браузере
                 document.getElementById('match-score').innerText = "10:7";
                 document.getElementById('analytics-probability').innerText = "FaZe 58% vs 42% G2";
                 document.getElementById('analytics-recommendation').innerText = "ТБ 21.5 раундов (4.2% от банка)";
@@ -98,7 +96,7 @@
             }
 
             try {
-                // Разбиваем простую цифровую строку по разделителю "_"
+                // Разбираем строку по разделителю "_"
                 const parts = rawData.split('_');
                 
                 const scoreValue = parts[0].replace('-', ':');
@@ -109,14 +107,40 @@
                 const odd2 = parts[5];
                 const uid = parts[6];
 
-                // Накатываем цифры в интерфейс
+                // Рассчитываем сумму ставки в рублях прямо на фронтенде по Критерию Келли
+                // Вероятность (P), Коэффициент на ТБ (K), Банкролл владельца
+                const probability = parseFloat(tb_chance) / 100;
+                const odds_tb = 1.85; 
+                const my_bankroll = 50000; 
+
+                let kelly_percent = 0;
+                let kelly_rubles = 0;
+
+                if (odds_tb > 1) {
+                    const kelly_factor = (probability * odds_tb - 1) / (odds_tb - 1);
+                    // Дробный Келли (0.25) для максимальной безопасности личного банка
+                    let safe_kelly = kelly_factor * 0.25; 
+                    if (safe_kelly > 0) {
+                        kelly_percent = Math.min(5.0, (safe_kelly * 100)).toFixed(1);
+                        kelly_rubles = Math.floor(my_bankroll * (kelly_percent / 100));
+                    }
+                }
+
+                // Выводим все данные на оранжево-графитовую панель
                 document.getElementById('match-score').innerText = scoreValue;
                 document.getElementById('analytics-probability').innerText = p1_percent + "% vs " + p2_percent + "%";
-                document.getElementById('analytics-recommendation').innerText = "ТБ 21.5 раундов (" + tb_chance + "% шанс)";
+                
+                // Строка рекомендации теперь выводит и процент, и сумму в рублях
+                if (kelly_rubles > 0) {
+                    document.getElementById('analytics-recommendation').innerText = "ТБ 21.5 раундов (" + tb_chance + "% шанс) · СТАВКА: " + kelly_rubles + " руб (" + kelly_percent + "%)";
+                } else {
+                    document.getElementById('analytics-recommendation').innerText = "Пропустить матч (Низкий валуй)";
+                }
+                
                 document.getElementById('btn-odds-p1').innerHTML = "<span>П1</span> " + odd1;
                 document.getElementById('btn-odds-p2').innerHTML = "<span>П2</span> " + odd2;
 
-                // Накладываем защиту владельца
+                // Накладываем невидимый водяной знак владельца Lucky
                 if (uid) {
                     const watermark = document.createElement('div');
                     watermark.style.position = 'fixed';
@@ -134,6 +158,7 @@
                 }
             } catch (e) {
                 console.error("Ошибка чтения параметров", e);
+                document.getElementById('match-status-text').innerText = "Ошибка разбора";
             }
         }
         window.addEventListener('DOMContentLoaded', loadMatchConfig);
