@@ -14,26 +14,9 @@
             --text-muted: #7e8494;
             --accent-green: #00cc66;
         }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            padding: 16px;
-            min-height: 100vh;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #252830;
-            padding-bottom: 12px;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); padding: 16px; min-height: 100vh; position: relative; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #252830; padding-bottom: 12px; }
         .logo-box h1 { font-size: 18px; font-weight: 800; text-transform: uppercase; }
         .logo-box span { color: var(--brand-orange); text-shadow: 0 0 10px var(--brand-orange-glow); }
         .winrate-badge { background: linear-gradient(135deg, #252830, #1a1c22); border: 1px solid var(--brand-orange); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
@@ -65,18 +48,18 @@
     </div>
     <div class="match-card">
         <div class="match-status">
-            <span id="match-status-text" class="status-live">Ожидание...</span>
-            <span id="tournament-title">CS Match</span>
+            <span id="match-status-text" class="status-live">Матч в эфире · Карта 1</span>
+            <span id="tournament-title">PGL Major 2026</span>
         </div>
         <div class="teams-container">
             <div class="team-row">
-                <div id="team1-logo" class="team-logo">T1</div>
-                <div id="team1-name" class="team-name">Команда 1</div>
+                <div class="team-logo">FaZe</div>
+                <div class="team-name">FaZe Clan</div>
             </div>
             <div id="match-score" class="match-score">0:0</div>
             <div class="team-row right">
-                <div id="team2-logo" class="team-logo">T2</div>
-                <div id="team2-name" class="team-name">Команда 2</div>
+                <div class="team-logo">G2</div>
+                <div class="team-name">G2 Esports</div>
             </div>
         </div>
         <div class="analytics-block">
@@ -86,11 +69,11 @@
             </div>
             <div class="analytics-row">
                 <span class="label">Фактор камбэка:</span>
-                <span id="analytics-comeback" class="value">Расчет...</span>
+                <span id="analytics-comeback" class="value">Высокий (У G2 сломана экономика)</span>
             </div>
             <div class="analytics-row">
                 <span class="label">Рекомендация:</span>
-                <span id="analytics-recommendation" class="value highlight">Обработка...</span>
+                <span id="analytics-recommendation" class="value highlight">Расчет...</span>
             </div>
         </div>
         <div class="odds-container">
@@ -99,20 +82,15 @@
         </div>
     </div>
 
-    <!-- Модуль безопасного приёма данных -->
     <script>
-        function getAppConfig() {
-            const params = new URLSearchParams(window.location.search);
-            const rawData = params.get('data');
+        function loadMatchConfig() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const rawData = urlParams.get('data');
 
             if (!rawData) {
-                document.getElementById('match-status-text').innerText = "Демо-режим";
-                document.getElementById('tournament-title').innerText = "Тестовый Турнир";
-                document.getElementById('team1-name').innerText = "FaZe Clan";
-                document.getElementById('team2-name').innerText = "G2 Esports";
+                // Демо-режим для тестов в браузере
                 document.getElementById('match-score').innerText = "10:7";
                 document.getElementById('analytics-probability').innerText = "FaZe 58% vs 42% G2";
-                document.getElementById('analytics-comeback').innerText = "Высокий (У G2 сломана экономика)";
                 document.getElementById('analytics-recommendation').innerText = "ТБ 21.5 раундов (4.2% от банка)";
                 document.getElementById('btn-odds-p1').innerHTML = "<span>П1</span> 1.65";
                 document.getElementById('btn-odds-p2').innerHTML = "<span>П2</span> 2.25";
@@ -120,30 +98,26 @@
             }
 
             try {
-                // Извлекаем чистую строку и преобразуем в понятный JSON объект
-                const decodedData = JSON.parse(decodeURIComponent(rawData));
+                // Разбиваем простую цифровую строку по разделителю "_"
+                const parts = rawData.split('_');
                 
-                document.getElementById('tournament-title').innerText = decodedData.tournament || "Турнир";
-                document.getElementById('match-status-text').innerText = decodedData.status_text || "В эфире";
-                
-                const t1 = decodedData.team1 || "Команда 1";
-                const t2 = decodedData.team2 || "Команда 2";
-                
-                document.getElementById('team1-name').innerText = t1;
-                document.getElementById('team2-name').innerText = t2;
-                document.getElementById('team1-logo').innerText = t1.substring(0, 4).toUpperCase();
-                document.getElementById('team2-logo').innerText = t2.substring(0, 4).toUpperCase();
-                
-                document.getElementById('match-score').innerText = decodedData.score || "0:0";
-                document.getElementById('analytics-probability').innerText = `${decodedData.p1_percent}% vs ${decodedData.p2_percent}%`;
-                document.getElementById('analytics-comeback').innerText = decodedData.comeback_factor || "Нормальный";
-                document.getElementById('analytics-recommendation').innerText = decodedData.recommendation || "Нет рекомендаций";
-                
-                document.getElementById('btn-odds-p1').innerHTML = `<span>П1</span> ${decodedData.odds_p1 || '--'}`;
-                document.getElementById('btn-odds-p2').innerHTML = `<span>П2</span> ${decodedData.odds_p2 || '--'}`;
-                
-                // Выводим твой скрытый ID на фон для проверки безопасности
-                if (decodedData.user_id) {
+                const scoreValue = parts[0].replace('-', ':');
+                const p1_percent = parts[1];
+                const p2_percent = parts[2];
+                const tb_chance = parts[3];
+                const odd1 = parts[4];
+                const odd2 = parts[5];
+                const uid = parts[6];
+
+                // Накатываем цифры в интерфейс
+                document.getElementById('match-score').innerText = scoreValue;
+                document.getElementById('analytics-probability').innerText = p1_percent + "% vs " + p2_percent + "%";
+                document.getElementById('analytics-recommendation').innerText = "ТБ 21.5 раундов (" + tb_chance + "% шанс)";
+                document.getElementById('btn-odds-p1').innerHTML = "<span>П1</span> " + odd1;
+                document.getElementById('btn-odds-p2').innerHTML = "<span>П2</span> " + odd2;
+
+                // Накладываем защиту владельца
+                if (uid) {
                     const watermark = document.createElement('div');
                     watermark.style.position = 'fixed';
                     watermark.style.top = '50%';
@@ -154,19 +128,15 @@
                     watermark.style.fontWeight = '800';
                     watermark.style.color = '#ffffff';
                     watermark.style.pointerEvents = 'none';
-                    watermark.style.zIndex = '1';
                     watermark.style.whiteSpace = 'nowrap';
-                    watermark.innerText = 'LAVARU SYSTEM · ID ' + decodedData.user_id;
+                    watermark.innerText = 'LAVARU SYSTEM · ID ' + uid;
                     document.body.appendChild(watermark);
                 }
-                
-            } catch (error) {
-                console.error("Ошибка парсинга:", error);
-                document.getElementById('match-status-text').innerText = "Ошибка разбора";
+            } catch (e) {
+                console.error("Ошибка чтения параметров", e);
             }
         }
-
-        window.addEventListener('DOMContentLoaded', getAppConfig);
+        window.addEventListener('DOMContentLoaded', loadMatchConfig);
     </script>
 </body>
 </html>
