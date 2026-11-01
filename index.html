@@ -3,39 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LAVARU CS EXPERT v1.0</title>
+    <title>LAVARU CS EXPERT v2.0</title>
     <style>
         :root {
-            --bg-main: #121316;
-            --bg-card: #1a1c22;
-            --brand-orange: #ff5500;
+            --bg-main: #121316; /* Глубокий антрацит */
+            --bg-card: #1a1c22; /* Графитовые плитки */
+            --brand-orange: #ff5500; /* Неоновый оранжевый */
             --brand-orange-glow: rgba(255, 85, 0, 0.2);
             --text-main: #ffffff;
             --text-muted: #7e8494;
             --accent-green: #00cc66;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-main); padding: 16px; min-height: 100vh; position: relative; }
+        body { background-color: var(--bg-main); color: var(--text-main); padding: 16px; min-height: 100vh; position: relative; padding-bottom: 40px; }
+        
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #252830; padding-bottom: 12px; }
-        .logo-box h1 { font-size: 18px; font-weight: 800; text-transform: uppercase; }
+        .logo-box h1 { font-size: 18px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
         .logo-box span { color: var(--brand-orange); text-shadow: 0 0 10px var(--brand-orange-glow); }
-        .winrate-badge { background: linear-gradient(135deg, #252830, #1a1c22); border: 1px solid var(--brand-orange); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .winrate-badge { background: linear-gradient(135deg, #252830, #1a1c22); border: 1px solid var(--brand-orange); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; box-shadow: 0 0 8px var(--brand-orange-glow); }
         .winrate-badge em { color: var(--accent-green); font-style: normal; }
-        .match-card { background-color: var(--bg-card); border-radius: 14px; border: 1px solid #252830; padding: 16px; margin-bottom: 16px; }
+        
+        /* Контейнер для ленты матчей */
+        #matches-container { display: flex; flex-direction: column; gap: 16px; }
+        
+        .match-card { background-color: var(--bg-card); border-radius: 14px; border: 1px solid #252830; padding: 16px; position: relative; overflow: hidden; }
         .match-status { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 12px; }
         .status-live { color: var(--brand-orange); display: flex; align-items: center; gap: 4px; }
         .status-live::before { content: ''; display: inline-block; width: 6px; height: 6px; background-color: var(--brand-orange); border-radius: 50%; }
+        
         .teams-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .team-row { display: flex; align-items: center; gap: 10px; width: 42%; }
         .team-row.right { flex-direction: row-reverse; text-align: right; }
-        .team-logo { width: 36px; height: 36px; background-color: #252830; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; border: 1px solid #323642; }
-        .team-name { font-size: 14px; font-weight: 700; }
-        .match-score { font-size: 20px; font-weight: 800; text-align: center; width: 16%; }
+        .team-logo { width: 36px; height: 36px; background-color: #252830; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; border: 1px solid #323642; }
+        .team-name { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .match-score { font-size: 20px; font-weight: 800; text-align: center; width: 16%; letter-spacing: 1px; }
+        
+        /* МОДУЛЬ ВГЛУБЬ: Графические Шкалы Формы Игроков */
+        .osint-graph-box { margin-bottom: 14px; background: #121316; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; gap: 8px; }
+        .graph-row { display: flex; flex-direction: column; gap: 4px; }
+        .graph-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); font-weight: 600; }
+        .bar-container { width: 100%; height: 6px; background-color: #252830; border-radius: 3px; overflow: hidden; position: relative; }
+        .bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease-in-out; }
+        .bar-fill.t1 { background: linear-gradient(90deg, #ff5500, #ffaa00); box-shadow: 0 0 6px rgba(255, 85, 0, 0.4); }
+        .bar-fill.t2 { background: linear-gradient(90deg, #00cc66, #00ffcc); box-shadow: 0 0 6px rgba(0, 204, 102, 0.4); }
+        
         .analytics-block { background-color: #121316; border-radius: 10px; padding: 12px; margin-bottom: 12px; border-left: 3px solid var(--brand-orange); }
         .analytics-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
+        .analytics-row:last-child { margin-bottom: 0; }
         .label { color: var(--text-muted); }
         .value { font-weight: 600; }
         .value.highlight { color: var(--brand-orange); }
+        
         .odds-container { display: flex; gap: 8px; }
         .odds-btn { flex: 1; background-color: #252830; border: 1px solid #323642; color: var(--text-main); padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 700; display: flex; justify-content: space-between; }
         .odds-btn span { color: var(--text-muted); font-weight: 400; }
@@ -46,152 +64,146 @@
         <div class="logo-box"><h1>LAVARU <span>CS EXPERT</span></h1></div>
         <div class="winrate-badge">W/R (30д): <em>74.2%</em></div>
     </div>
-    <div class="match-card">
-        <div class="match-status">
-            <span id="match-status-text" class="status-live">ПОДКЛЮЧЕНИЕ К HLTV...</span>
-            <span id="tournament-title">PGL MAJOR 2026</span>
-        </div>
-        <div class="teams-container">
-            <div class="team-row">
-                <div id="t1-ico" class="team-logo">FAZE</div>
-                <div id="team1-name" class="team-name">FaZe Clan</div>
-            </div>
-            <div id="match-score" class="match-score">0:0</div>
-            <div class="team-row right">
-                <div id="t2-ico" class="team-logo">G2</div>
-                <div id="team2-name" class="team-name">G2 Esports</div>
-            </div>
-        </div>
-        <div class="analytics-block">
-            <div class="analytics-row">
-                <span class="label">Вероятность (Live + OSINT):</span>
-                <span id="analytics-probability" class="value">--% vs --%</span>
-            </div>
-            <div class="analytics-row">
-                <span class="label">Фактор камбэка:</span>
-                <span id="analytics-comeback" class="value">Высокий (У G2 сломана экономика)</span>
-            </div>
-            <div class="analytics-row">
-                <span class="label">Рекомендация:</span>
-                <span id="analytics-recommendation" class="value highlight">Обработка линий...</span>
-            </div>
-        </div>
-        <div class="odds-container">
-            <div id="btn-odds-p1" class="odds-btn"><span>П1</span> 1.65</div>
-            <div id="btn-odds-p2" class="odds-btn"><span>П2</span> 2.25</div>
-        </div>
-    </div>
+    
+    <!-- Сюда JavaScript будет вставлять все предстоящие матчи лиг -->
+    <div id="matches-container"></div>
     <script>
-        async function loadHltvLiveFeed() {
+        function loadMultiMatchConfig() {
             const urlParams = new URLSearchParams(window.location.search);
             const rawData = urlParams.get('data');
-            let uid = "";
+            const container = document.getElementById('matches-container');
 
-            // По умолчанию закладываем базовые значения
-            let scoreValue = "11:8";
-            let p1_percent = 76;
-            let p2_percent = 23;
-            let tb_chance = 68;
-            let odd1 = "1.65";
-            let odd2 = "2.25";
-
-            if (rawData) {
-                try {
-                    const parts = rawData.split('_');
-                    scoreValue = parts[0].replace('-', ':');
-                    p1_percent = parseInt(parts[1]) || 76;
-                    p2_percent = parseInt(parts[2]) || 23;
-                    tb_chance = parseInt(parts[3]) || 68;
-                    odd1 = parts[4] || "1.65";
-                    odd2 = parts[5] || "2.25";
-                    uid = parts[6] || "";
-                } catch(err) {
-                    console.error("Ошибка первичного разбора строки:", err);
-                }
+            // 1. ДЕМО-ФИД (ДЛЯ ТЕСТОВ В БРАУЗЕРЕ), ЕСЛИ БОТ ЕЩЕ НЕ ПЕРЕДАЛ МАССИВ МАТЧЕЙ
+            if (!rawData) {
+                const sampleMatches = [
+                    { t: "ESL Pro League S24", status: "LIVE · КАРТА 1", team1: "FaZe Clan", team2: "G2 Esports", score: "11:8", p1: 76, p2: 23, t1_tonus: 88, t2_tonus: 42, rec: "ТБ 21.5 (2500р)", o1: "1.65", o2: "2.25", uid: "506463187" },
+                    { t: "BLAST Premier World Final", status: "18:30 (СЕГОДНЯ)", team1: "Natus Vincere", team2: "Team Vitality", score: "0:0", p1: 52, p2: 48, t1_tonus: 94, t2_tonus: 91, rec: "П1 по Келли (1200р)", o1: "1.85", o2: "1.95", uid: "506463187" },
+                    { t: "IEM Katowice 2026", status: "21:00 (СЕГОДНЯ)", team1: "Team Spirit", team2: "MOUZ", score: "0:0", p1: 61, p2: 39, t1_tonus: 97, t2_tonus: 78, rec: "Фора 1 (-2.5) (1500р)", o1: "1.55", o2: "2.40", uid: "506463187" }
+                ];
+                renderMatches(sampleMatches);
+                return;
             }
 
-            // --- ЖИВОЙ ПАРСИНГ ХОСТИНГА ДАННЫХ (БРАУЗЕРНЫЙ ОБХОД BLOCK) ---
+            // 2. РАЗБОР РЕАЛЬНОГО ПОТОКА ДАННЫХ ИЗ Python
             try {
-                const response = await fetch('https://hltv.org', { timeout: 2500 });
-                if (response.ok) {
-                    const liveData = await response.json();
-                    if (liveData && liveData.length > 0) {
-                        const m = liveData[0]; // Берем верхний текущий матч
-                        document.getElementById('tournament-title').innerText = m.event_name || "PGL MAJOR 2026";
-                        document.getElementById('team1-name').innerText = m.team1_name || "FaZe Clan";
-                        document.getElementById('team2-name').innerText = m.team2_name || "G2 Esports";
-                        document.getElementById('t1-ico').innerText = (m.team1_name || "FAZE").substring(0, 4).toUpperCase();
-                        document.getElementById('t2-ico').innerText = (m.team2_name || "G2").substring(0, 4).toUpperCase();
-                        
-                        scoreValue = m.team1_score + ":" + m.team2_score;
-                        
-                        // Динамический пересчет вероятности прямо в браузере на основе счета HLTV
-                        const diff = m.team1_score - m.team2_score;
-                        let liveBase = 0.50; // С учетом нашего OSINT
-                        let currentLive = liveBase + (diff * 0.042);
-                        if (m.team1_side === "T" && diff < 0) currentLive += 0.04;
-                        if (m.team2_loss_bonus >= 4 && m.team1_score > m.team2_score) currentLive += 0.06;
-                        
-                        p1_percent = Math.max(2, Math.min(98, Math.floor(currentLive * 100)));
-                        p2_percent = 100 - p1_percent;
-                        
-                        document.getElementById('match-status-text').innerText = "МАТЧ В ЭФИРЕ · " + (m.current_map || "КАРТА 1");
-                    }
+                // Извлекаем и преобразуем переданную строку
+                const decodedData = decodeURIComponent(rawData);
+                
+                // Если данные пришли в формате короткой строки, преобразуем в массив объектов
+                if (!decodedData.includes('[{')) {
+                    const parts = decodedData.split('_');
+                    const singleMatch = [{
+                        t: "PGL Major 2026", status: "МАТЧ В ЭФИРЕ",
+                        team1: "FaZe Clan", team2: "G2 Esports", score: parts[0].replace('-', ':'),
+                        p1: parseInt(parts[1]) || 50, p2: parseInt(parts[2]) || 50,
+                        t1_tonus: 85, t2_tonus: 52, // Дефолтные шкалы для обратной совместимости
+                        rec: "ТБ 21.5 раундов (" + parts[3] + "% шанс)",
+                        o1: parts[4] || "1.0", o2: parts[5] || "1.0",
+                        uid: parts[6] || ""
+                    }];
+                    renderMatches(singleMatch);
                 } else {
-                    document.getElementById('match-status-text').innerText = "МАТЧ В ЭФИРЕ · КАРТА 1";
+                    // Если Python передал полный массив предстоящих лиг матчей в JSON
+                    const matchesArray = JSON.parse(decodedData);
+                    renderMatches(matchesArray);
                 }
             } catch (e) {
-                // Если HLTV заблокирован или нет интернета, мягко переходим на автономный режим бота
-                document.getElementById('match-status-text').innerText = "МАТЧ В ЭФИРЕ · КАРТА 1";
-            }
-
-            // --- МОДУЛЬ ФИНАНСОВОГО УПРАВЛЕНИЯ ПО КЕЛЛИ ---
-            const probability = parseFloat(tb_chance) / 100;
-            const odds_tb = 1.85; 
-            const my_bankroll = 50000; 
-
-            let kelly_percent = 0;
-            let kelly_rubles = 0;
-
-            if (odds_tb > 1) {
-                const kelly_factor = (probability * odds_tb - 1) / (odds_tb - 1);
-                let safe_kelly = kelly_factor * 0.25; 
-                if (safe_kelly > 0) {
-                    kelly_percent = Math.min(5.0, (safe_kelly * 100)).toFixed(1);
-                    kelly_rubles = Math.floor(my_bankroll * (kelly_percent / 100));
-                }
-            }
-
-            // Вывод всех живых метрик на графитовый экран Winline-style
-            document.getElementById('match-score').innerText = scoreValue;
-            document.getElementById('analytics-probability').innerText = p1_percent + "% vs " + p2_percent + "%";
-            document.getElementById('btn-odds-p1').innerHTML = "<span>П1</span> " + odd1;
-            document.getElementById('btn-odds-p2').innerHTML = "<span>П2</span> " + odd2;
-
-            if (kelly_rubles > 0) {
-                document.getElementById('analytics-recommendation').innerText = "ТБ 21.5 раундов (" + tb_chance + "% шанс) · СТАВКА: " + kelly_rubles + " руб (" + kelly_percent + "%)";
-            } else {
-                document.getElementById('analytics-recommendation').innerText = "Пропустить матч (Низкий валуй)";
-            }
-
-            // Отрисовка невидимой водяной защиты Lucky
-            if (uid) {
-                const watermark = document.createElement('div');
-                watermark.style.position = 'fixed';
-                watermark.style.top = '50%';
-                watermark.style.left = '50%';
-                watermark.style.transform = 'translate(-50%, -50%) rotate(-45deg)';
-                watermark.style.opacity = '0.02';
-                watermark.style.fontSize = '24px';
-                watermark.style.fontWeight = '800';
-                watermark.style.color = '#ffffff';
-                watermark.style.pointerEvents = 'none';
-                watermark.style.whiteSpace = 'nowrap';
-                watermark.innerText = 'LAVARU SYSTEM · ID ' + uid;
-                document.body.appendChild(watermark);
+                console.error("Ошибка парсинга потока матчей:", e);
+                container.innerHTML = "<div style='text-align:center;color:red;padding:20px;font-weight:700;'>ОШИБКА ОБРАБОТКИ ЛЕНТЫ МАТЧЕЙ</div>";
             }
         }
-        window.addEventListener('DOMContentLoaded', loadHltvLiveFeed);
+
+        // ФУНКЦИЯ ОТРИСОВКИ КАРТОЧЕК И НЕОНОВЫХ ГРАФИКОВ ФОРМЫ
+        function renderMatches(matches) {
+            const container = document.getElementById('matches-container');
+            container.innerHTML = ""; // Очищаем контейнер
+
+            matches.forEach((m, index) => {
+                const card = document.createElement('div');
+                card.className = "match-card";
+                
+                // Извлекаем первые 4 буквы для круглых логотипов команд
+                const ico1 = (m.team1 || "T1").substring(0, 4).toUpperCase();
+                const ico2 = (m.team2 || "T2").substring(0, 4).toUpperCase();
+
+                card.innerHTML = `
+                    <div class="match-status">
+                        <span class="${m.status.includes('LIVE') ? 'status-live' : ''}">${m.status}</span>
+                        <span>${m.t}</span>
+                    </div>
+                    <div class="teams-container">
+                        <div class="team-row">
+                            <div class="team-logo">${ico1}</div>
+                            <div class="team-name">${m.team1}</div>
+                        </div>
+                        <div class="match-score">${m.score}</div>
+                        <div class="team-row right">
+                            <div class="team-logo">${ico2}</div>
+                            <div class="team-name">${m.team2}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- ВИЗУАЛЬНЫЕ ШКАЛЫ ФОРМЫ ИГРОКОВ (OSINT GRAPHICS) -->
+                    <div class="osint-graph-box">
+                        <div class="graph-row">
+                            <div class="graph-labels">
+                                <span>Тонус Игроков / Активность в Steam</span>
+                                <span>${m.t1_tonus}%</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill t1" style="width: ${m.t1_tonus}%"></div>
+                            </div>
+                        </div>
+                        <div class="graph-row">
+                            <div class="graph-labels">
+                                <span>Психологический фон / Моральное состояние</span>
+                                <span>${m.t2_tonus}%</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill t2" style="width: ${m.t2_tonus}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-block">
+                        <div class="analytics-row">
+                            <span class="label">Шансы ИИ (Live + OSINT):</span>
+                            <span class="value">${m.p1}% vs ${m.p2}%</span>
+                        </div>
+                        <div class="analytics-row">
+                            <span class="label">Рекомендация по Келли:</span>
+                            <span class="value highlight">${m.rec}</span>
+                        </div>
+                    </div>
+                    <div class="odds-container">
+                        <div class="odds-btn"><span>П1</span> ${m.o1}</div>
+                        <div class="odds-btn"><span>П2</span> ${m.o2}</div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+
+                // Отрисовка скрытого знака Lucky на бэкграунд (только один раз для страницы)
+                if (index === 0 && m.uid) {
+                    const watermark = document.createElement('div');
+                    watermark.style.position = 'fixed';
+                    watermark.style.top = '50%';
+                    watermark.style.left = '50%';
+                    watermark.style.transform = 'translate(-50%, -50%) rotate(-45deg)';
+                    watermark.style.opacity = '0.015';
+                    watermark.style.fontSize = '24px';
+                    watermark.style.fontWeight = '800';
+                    watermark.style.color = '#ffffff';
+                    watermark.style.pointerEvents = 'none';
+                    watermark.style.zIndex = '1';
+                    watermark.style.whiteSpace = 'nowrap';
+                    watermark.innerText = 'LAVARU SYSTEM · ID ' + m.uid;
+                    document.body.appendChild(watermark);
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', loadMultiMatchConfig);
     </script>
 </body>
 </html>
