@@ -72,7 +72,7 @@
                 return;
             }
 
-            // 2. СТАБИЛЬНЫЙ РАЗБОР ПОТОКА МАТЧЕЙ ИЗ PYTHON БЕЗ ОШИБОК МАССИВА
+            // 2. СТАБИЛЬНЫЙ ПРЯМОЙ РАЗБОР ПОЛНОГО JSON-МАССИВА МАТЧЕЙ ИЗ PYTHON
             try {
                 const decodedData = decodeURIComponent(rawData);
                 const matchesArray = JSON.parse(decodedData);
@@ -97,18 +97,18 @@
 
                 card.innerHTML = `
                     <div class="match-status">
-                        <span class="${m.status.includes('LIVE') ? 'status-live' : ''}">${m.status}</span>
-                        <span>${m.t}</span>
+                        <span class="${m.status && m.status.includes('LIVE') ? 'status-live' : ''}">${m.status || 'Предстоящий'}</span>
+                        <span>${m.t || 'Турнир'}</span>
                     </div>
                     <div class="teams-container">
                         <div class="team-row">
                             <div class="team-logo">${ico1}</div>
-                            <div class="team-name">${m.team1}</div>
+                            <div class="team-name">${m.team1 || 'Команда 1'}</div>
                         </div>
-                        <div class="match-score">${m.score}</div>
+                        <div class="match-score">${m.score || '0:0'}</div>
                         <div class="team-row right">
                             <div class="team-logo">${ico2}</div>
-                            <div class="team-name">${m.team2}</div>
+                            <div class="team-name">${m.team2 || 'Команда 2'}</div>
                         </div>
                     </div>
                     
@@ -136,22 +136,22 @@
                     <div class="analytics-block">
                         <div class="analytics-row">
                             <span class="label">Шансы ИИ (Live + OSINT):</span>
-                            <span class="value">${m.p1}% vs ${m.p2}%</span>
+                            <span class="value">${m.p1 || 50}% vs ${m.p2 || 50}%</span>
                         </div>
                         <div class="analytics-row">
                             <span class="label">Рекомендация по Келли:</span>
-                            <span class="value highlight">${m.rec}</span>
+                            <span class="value highlight">${m.rec || 'Расчет...'}</span>
                         </div>
                     </div>
                     <div class="odds-container">
-                        <div class="odds-btn"><span>П1</span> ${m.o1}</div>
-                        <div class="odds-btn"><span>П2</span> ${m.o2}</div>
+                        <div class="odds-btn"><span>П1</span> ${m.o1 || '--'}</div>
+                        <div class="odds-btn"><span>П2</span> ${m.o2 || '--'}</div>
                     </div>
                 `;
 
                 container.appendChild(card);
 
-                // Отрисовка скрытого знака Lucky на бэкграунд страницы
+                // Отрисовка скрытого водяного знака Lucky на бэкграунд страницы
                 if (index === 0 && m.uid) {
                     const watermark = document.createElement('div');
                     watermark.style.position = 'fixed';
