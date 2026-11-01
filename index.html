@@ -6,9 +6,9 @@
     <title>LAVARU CS EXPERT v2.0</title>
     <style>
         :root {
-            --bg-main: #121316; /* Глубокий антрацит */
-            --bg-card: #1a1c22; /* Графитовые плитки */
-            --brand-orange: #ff5500; /* Неоновый оранжевый */
+            --bg-main: #121316;
+            --bg-card: #1a1c22;
+            --brand-orange: #ff5500;
             --brand-orange-glow: rgba(255, 85, 0, 0.2);
             --text-main: #ffffff;
             --text-muted: #7e8494;
@@ -16,44 +16,34 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background-color: var(--bg-main); color: var(--text-main); padding: 16px; min-height: 100vh; position: relative; padding-bottom: 40px; }
-        
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #252830; padding-bottom: 12px; }
-        .logo-box h1 { font-size: 18px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .logo-box h1 { font-size: 18px; font-weight: 800; text-transform: uppercase; }
         .logo-box span { color: var(--brand-orange); text-shadow: 0 0 10px var(--brand-orange-glow); }
-        .winrate-badge { background: linear-gradient(135deg, #252830, #1a1c22); border: 1px solid var(--brand-orange); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; box-shadow: 0 0 8px var(--brand-orange-glow); }
+        .winrate-badge { background: linear-gradient(135deg, #252830, #1a1c22); border: 1px solid var(--brand-orange); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .winrate-badge em { color: var(--accent-green); font-style: normal; }
-        
-        /* Контейнер для ленты матчей */
         #matches-container { display: flex; flex-direction: column; gap: 16px; }
-        
         .match-card { background-color: var(--bg-card); border-radius: 14px; border: 1px solid #252830; padding: 16px; position: relative; overflow: hidden; }
         .match-status { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 12px; }
         .status-live { color: var(--brand-orange); display: flex; align-items: center; gap: 4px; }
         .status-live::before { content: ''; display: inline-block; width: 6px; height: 6px; background-color: var(--brand-orange); border-radius: 50%; }
-        
         .teams-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .team-row { display: flex; align-items: center; gap: 10px; width: 42%; }
         .team-row.right { flex-direction: row-reverse; text-align: right; }
         .team-logo { width: 36px; height: 36px; background-color: #252830; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; border: 1px solid #323642; }
         .team-name { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .match-score { font-size: 20px; font-weight: 800; text-align: center; width: 16%; letter-spacing: 1px; }
-        
-        /* МОДУЛЬ ВГЛУБЬ: Графические Шкалы Формы Игроков */
+        .match-score { font-size: 20px; font-weight: 800; text-align: center; width: 16%; }
         .osint-graph-box { margin-bottom: 14px; background: #121316; padding: 10px; border-radius: 8px; display: flex; flex-direction: column; gap: 8px; }
         .graph-row { display: flex; flex-direction: column; gap: 4px; }
         .graph-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); font-weight: 600; }
-        .bar-container { width: 100%; height: 6px; background-color: #252830; border-radius: 3px; overflow: hidden; position: relative; }
-        .bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease-in-out; }
-        .bar-fill.t1 { background: linear-gradient(90deg, #ff5500, #ffaa00); box-shadow: 0 0 6px rgba(255, 85, 0, 0.4); }
-        .bar-fill.t2 { background: linear-gradient(90deg, #00cc66, #00ffcc); box-shadow: 0 0 6px rgba(0, 204, 102, 0.4); }
-        
+        .bar-container { width: 100%; height: 6px; background-color: #252830; border-radius: 3px; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 3px; }
+        .bar-fill.t1 { background: linear-gradient(90deg, #ff5500, #ffaa00); }
+        .bar-fill.t2 { background: linear-gradient(90deg, #00cc66, #00ffcc); }
         .analytics-block { background-color: #121316; border-radius: 10px; padding: 12px; margin-bottom: 12px; border-left: 3px solid var(--brand-orange); }
         .analytics-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
-        .analytics-row:last-child { margin-bottom: 0; }
         .label { color: var(--text-muted); }
         .value { font-weight: 600; }
         .value.highlight { color: var(--brand-orange); }
-        
         .odds-container { display: flex; gap: 8px; }
         .odds-btn { flex: 1; background-color: #252830; border: 1px solid #323642; color: var(--text-main); padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 700; display: flex; justify-content: space-between; }
         .odds-btn span { color: var(--text-muted); font-weight: 400; }
@@ -64,8 +54,6 @@
         <div class="logo-box"><h1>LAVARU <span>CS EXPERT</span></h1></div>
         <div class="winrate-badge">W/R (30д): <em>74.2%</em></div>
     </div>
-    
-    <!-- Сюда JavaScript будет вставлять все предстоящие матчи лиг -->
     <div id="matches-container"></div>
     <script>
         function loadMultiMatchConfig() {
@@ -73,10 +61,10 @@
             const rawData = urlParams.get('data');
             const container = document.getElementById('matches-container');
 
-            // 1. ДЕМО-ФИД (ДЛЯ ТЕСТОВ В БРАУЗЕРЕ), ЕСЛИ БОТ ЕЩЕ НЕ ПЕРЕДАЛ МАССИВ МАТЧЕЙ
+            // 1. ДЕМО-ФИД (ДЛЯ ТЕСТОВ В БРАУЗЕРЕ), ЕСЛИ СТРАНИЦА ОТКРЫТА БЕЗ БОТА
             if (!rawData) {
                 const sampleMatches = [
-                    { t: "ESL Pro League S24", status: "LIVE · КАРТА 1", team1: "FaZe Clan", team2: "G2 Esports", score: "11:8", p1: 76, p2: 23, t1_tonus: 88, t2_tonus: 42, rec: "ТБ 21.5 (2500р)", o1: "1.65", o2: "2.25", uid: "506463187" },
+                    { t: "ESL Pro League S24", status: "LIVE · КАРТА 1", team1: "FaZe Clan", team2: "G2 Esports", score: "11:8", p1: 76, p2: 23, t1_tonus: 88, t2_tonus: 52, rec: "ТБ 21.5 (2500р)", o1: "1.65", o2: "2.25", uid: "506463187" },
                     { t: "BLAST Premier World Final", status: "18:30 (СЕГОДНЯ)", team1: "Natus Vincere", team2: "Team Vitality", score: "0:0", p1: 52, p2: 48, t1_tonus: 94, t2_tonus: 91, rec: "П1 по Келли (1200р)", o1: "1.85", o2: "1.95", uid: "506463187" },
                     { t: "IEM Katowice 2026", status: "21:00 (СЕГОДНЯ)", team1: "Team Spirit", team2: "MOUZ", score: "0:0", p1: 61, p2: 39, t1_tonus: 97, t2_tonus: 78, rec: "Фора 1 (-2.5) (1500р)", o1: "1.55", o2: "2.40", uid: "506463187" }
                 ];
@@ -84,45 +72,26 @@
                 return;
             }
 
-            // 2. РАЗБОР РЕАЛЬНОГО ПОТОКА ДАННЫХ ИЗ Python
+            // 2. СТАБИЛЬНЫЙ РАЗБОР ПОТОКА МАТЧЕЙ ИЗ PYTHON БЕЗ ОШИБОК МАССИВА
             try {
-                // Извлекаем и преобразуем переданную строку
                 const decodedData = decodeURIComponent(rawData);
-                
-                // Если данные пришли в формате короткой строки, преобразуем в массив объектов
-                if (!decodedData.includes('[{')) {
-                    const parts = decodedData.split('_');
-                    const singleMatch = [{
-                        t: "PGL Major 2026", status: "МАТЧ В ЭФИРЕ",
-                        team1: "FaZe Clan", team2: "G2 Esports", score: parts[0].replace('-', ':'),
-                        p1: parseInt(parts[1]) || 50, p2: parseInt(parts[2]) || 50,
-                        t1_tonus: 85, t2_tonus: 52, // Дефолтные шкалы для обратной совместимости
-                        rec: "ТБ 21.5 раундов (" + parts[3] + "% шанс)",
-                        o1: parts[4] || "1.0", o2: parts[5] || "1.0",
-                        uid: parts[6] || ""
-                    }];
-                    renderMatches(singleMatch);
-                } else {
-                    // Если Python передал полный массив предстоящих лиг матчей в JSON
-                    const matchesArray = JSON.parse(decodedData);
-                    renderMatches(matchesArray);
-                }
+                const matchesArray = JSON.parse(decodedData);
+                renderMatches(matchesArray);
             } catch (e) {
                 console.error("Ошибка парсинга потока матчей:", e);
-                container.innerHTML = "<div style='text-align:center;color:red;padding:20px;font-weight:700;'>ОШИБКА ОБРАБОТКИ ЛЕНТЫ МАТЧЕЙ</div>";
+                container.innerHTML = "<div style='text-align:center;color:#ff5500;padding:20px;font-weight:700;'>ОШИБКА ОБРАБОТКИ ЛЕНТЫ МАТЧЕЙ</div>";
             }
         }
 
-        // ФУНКЦИЯ ОТРИСОВКИ КАРТОЧЕК И НЕОНОВЫХ ГРАФИКОВ ФОРМЫ
+        // ФУНКЦИЯ ДИНАМИЧЕСКОЙ ОТРИСОВКИ ЛЕНТЫ
         function renderMatches(matches) {
             const container = document.getElementById('matches-container');
-            container.innerHTML = ""; // Очищаем контейнер
+            container.innerHTML = "";
 
             matches.forEach((m, index) => {
                 const card = document.createElement('div');
                 card.className = "match-card";
                 
-                // Извлекаем первые 4 буквы для круглых логотипов команд
                 const ico1 = (m.team1 || "T1").substring(0, 4).toUpperCase();
                 const ico2 = (m.team2 || "T2").substring(0, 4).toUpperCase();
 
@@ -143,24 +112,23 @@
                         </div>
                     </div>
                     
-                    <!-- ВИЗУАЛЬНЫЕ ШКАЛЫ ФОРМЫ ИГРОКОВ (OSINT GRAPHICS) -->
                     <div class="osint-graph-box">
                         <div class="graph-row">
                             <div class="graph-labels">
                                 <span>Тонус Игроков / Активность в Steam</span>
-                                <span>${m.t1_tonus}%</span>
+                                <span>${m.t1_tonus || 50}%</span>
                             </div>
                             <div class="bar-container">
-                                <div class="bar-fill t1" style="width: ${m.t1_tonus}%"></div>
+                                <div class="bar-fill t1" style="width: ${m.t1_tonus || 50}%"></div>
                             </div>
                         </div>
                         <div class="graph-row">
                             <div class="graph-labels">
                                 <span>Психологический фон / Моральное состояние</span>
-                                <span>${m.t2_tonus}%</span>
+                                <span>${m.t2_tonus || 50}%</span>
                             </div>
                             <div class="bar-container">
-                                <div class="bar-fill t2" style="width: ${m.t2_tonus}%"></div>
+                                <div class="bar-fill t2" style="width: ${m.t2_tonus || 50}%"></div>
                             </div>
                         </div>
                     </div>
@@ -183,7 +151,7 @@
 
                 container.appendChild(card);
 
-                // Отрисовка скрытого знака Lucky на бэкграунд (только один раз для страницы)
+                // Отрисовка скрытого знака Lucky на бэкграунд страницы
                 if (index === 0 && m.uid) {
                     const watermark = document.createElement('div');
                     watermark.style.position = 'fixed';
