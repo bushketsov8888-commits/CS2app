@@ -56,34 +56,36 @@
     </div>
     <div id="matches-container"></div>
     <script>
-        function loadMultiMatchConfig() {
+        function decodeAndLoadConfig() {
             const urlParams = new URLSearchParams(window.location.search);
-            const rawData = urlParams.get('data');
+            const payload = urlParams.get('payload');
             const container = document.getElementById('matches-container');
 
-            // 1. ДЕМО-ФИД (ДЛЯ ТЕСТОВ В БРАУЗЕРЕ), ЕСЛИ СТРАНИЦА ОТКРЫТА БЕЗ БОТА
-            if (!rawData) {
+            if (!payload) {
                 const sampleMatches = [
                     { t: "ESL Pro League S24", status: "LIVE · КАРТА 1", team1: "FaZe Clan", team2: "G2 Esports", score: "11:8", p1: 76, p2: 23, t1_tonus: 88, t2_tonus: 52, rec: "ТБ 21.5 (2500р)", o1: "1.65", o2: "2.25", uid: "506463187" },
-                    { t: "BLAST Premier World Final", status: "18:30 (СЕГОДНЯ)", team1: "Natus Vincere", team2: "Team Vitality", score: "0:0", p1: 52, p2: 48, t1_tonus: 94, t2_tonus: 91, rec: "П1 по Келли (1200р)", o1: "1.85", o2: "1.95", uid: "506463187" },
-                    { t: "IEM Katowice 2026", status: "21:00 (СЕГОДНЯ)", team1: "Team Spirit", team2: "MOUZ", score: "0:0", p1: 61, p2: 39, t1_tonus: 97, t2_tonus: 78, rec: "Фора 1 (-2.5) (1500р)", o1: "1.55", o2: "2.40", uid: "506463187" }
+                    { t: "BLAST Premier World Final", status: "18:30 (СЕГОДНЯ)", team1: "Natus Vincere", team2: "Team Vitality", score: "0:0", p1: 52, p2: 48, t1_tonus: 94, t2_tonus: 91, rec: "П1 по Келли (1200р)", o1: "1.85", o2: "1.95", uid: "506463187" }
                 ];
                 renderMatches(sampleMatches);
                 return;
             }
 
-            // 2. СТАБИЛЬНЫЙ ПРЯМОЙ РАЗБОР ПОЛНОГО JSON-МАССИВА МАТЧЕЙ ИЗ PYTHON
             try {
-                const decodedData = decodeURIComponent(rawData);
-                const matchesArray = JSON.parse(decodedData);
+                // Декодируем безопасный Base64 в байты и собираем UTF-8 строку без искажений кириллицы
+                const binaryString = atob(decodeURIComponent(payload));
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                const jsonString = new TextDecoder('utf-8').decode(bytes);
+                const matchesArray = JSON.parse(jsonString);
                 renderMatches(matchesArray);
             } catch (e) {
-                console.error("Ошибка парсинга потока матчей:", e);
-                container.innerHTML = "<div style='text-align:center;color:#ff5500;padding:20px;font-weight:700;'>ОШИБКА ОБРАБОТКИ ЛЕНТЫ МАТЧЕЙ</div>";
+                console.error("Критическая ошибка декодирования Base64:", e);
+                container.innerHTML = "<div style='text-align:center;color:#ff5500;padding:20px;font-weight:700;'>ОШИБКА ДЕКОДИРОВАНИЯ ЛЕНТЫ МАТЧЕЙ</div>";
             }
         }
 
-        // ФУНКЦИЯ ДИНАМИЧЕСКОЙ ОТРИСОВКИ ЛЕНТЫ
         function renderMatches(matches) {
             const container = document.getElementById('matches-container');
             container.innerHTML = "";
@@ -151,7 +153,6 @@
 
                 container.appendChild(card);
 
-                // Отрисовка скрытого водяного знака Lucky на бэкграунд страницы
                 if (index === 0 && m.uid) {
                     const watermark = document.createElement('div');
                     watermark.style.position = 'fixed';
@@ -171,7 +172,7 @@
             });
         }
 
-        window.addEventListener('DOMContentLoaded', loadMultiMatchConfig);
+        window.addEventListener('DOMContentLoaded', decodeAndLoadConfig);
     </script>
 </body>
 </html>
